@@ -3,10 +3,9 @@
   "name": "specsheet",
   "main": "./worker/index.mjs",
   "compatibility_date": "2026-08-24",
-  // 전환 전까지 비워 두어 옛 devlog Worker와 겹쳐 돌지 않게 한다.
-  // 전환 때 ["0 22 * * *", "25 0 * * *"]로 바꾼다. Cron Trigger는 UTC 기준이다.
+  // 매일 07:00 KST 뉴스, 09:25 KST 아카이브. Cron Trigger는 UTC 기준이다.
   "triggers": {
-    "crons": []
+    "crons": ["0 22 * * *", "25 0 * * *"]
   },
   "ai": {
     "binding": "AI"
