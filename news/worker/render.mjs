@@ -106,8 +106,9 @@ const siteFromEnv = (env) => ({
   title: "devlog news",
   tagline: "IT 업계 뉴스와 엔지니어링 블로그를 하루 한 편으로 묶는 뉴스레터",
   githubUser: "tkddls8848",
-  devlogUrl: env.DEVLOG_URL || "https://tkddls8848.github.io/devlog/",
-  archiveUrl: env.ARCHIVE_URL || "https://tkddls8848.github.io/devlog/archive/",
+  devlogUrl: env.DEVLOG_URL || "https://devlog.tkddls8848.workers.dev/devlog/",
+  archiveUrl: env.ARCHIVE_URL || "/archive/",
+  newsUrl: env.NEWS_URL || "/",
 });
 
 export function layout({ env, title, summary, current = "", content, canonical = "", wide = false, scripts = [], robots = "" }) {
@@ -122,7 +123,7 @@ export function layout({ env, title, summary, current = "", content, canonical =
     <meta name="color-scheme" content="light dark" />
     ${robots ? `<meta name="robots" content="${escapeHtml(robots)}" />` : ""}
     ${canonical ? `<link rel="canonical" href="${escapeHtml(canonical)}" />` : ""}
-    <link rel="alternate" type="application/rss+xml" title="${site.title}" href="/feed.xml" />
+    <link rel="alternate" type="application/rss+xml" title="${site.title}" href="${escapeHtml(site.newsUrl)}feed.xml" />
     <link rel="stylesheet" href="/assets/css/theme.css" />
     <link rel="stylesheet" href="/assets/css/main.css" />
     <script src="/assets/js/theme-init.js"></script>
@@ -134,7 +135,7 @@ export function layout({ env, title, summary, current = "", content, canonical =
         <nav class="site-nav" aria-label="주요">
           <a href="${escapeHtml(site.devlogUrl)}"${current === "devlog" ? ' aria-current="page"' : ""}>개발 일지</a>
           <a href="${escapeHtml(site.archiveUrl)}"${current === "archive" ? ' aria-current="page"' : ""}>아카이브</a>
-          <a href="/"${current === "home" ? ' aria-current="page"' : ""}>뉴스레터</a>
+          <a href="${escapeHtml(site.newsUrl)}"${current === "home" ? ' aria-current="page"' : ""}>뉴스레터</a>
         </nav>
         ${themeToggle}
       </div>
@@ -143,7 +144,7 @@ export function layout({ env, title, summary, current = "", content, canonical =
     <footer class="site-footer">
       <div class="site-footer-inner">
         <p class="site-tagline">${site.tagline}</p>
-        <p>© ${new Date().getFullYear()} ${site.githubUser} · <a href="https://github.com/${site.githubUser}">GitHub</a> · <a href="/feed.xml">RSS</a></p>
+        <p>© ${new Date().getFullYear()} ${site.githubUser} · <a href="https://github.com/${site.githubUser}">GitHub</a> · <a href="${escapeHtml(site.newsUrl)}feed.xml">RSS</a></p>
       </div>
     </footer>
     <script src="/assets/js/theme-toggle.js"></script>

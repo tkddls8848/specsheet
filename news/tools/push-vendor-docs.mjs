@@ -13,8 +13,8 @@ import { fileURLToPath } from "node:url";
 import { collectHpe } from "../../shared/vendor-hpe.mjs";
 
 const NEWS_ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
-const DATABASE_ID = "49dde3a7-307c-463d-91bc-c2d44cf7a8e7";
-const DATABASE_NAME = "devlog-news";
+const DATABASE_ID = "0ca0547a-56ab-48e7-9a07-89f0169b6d99";
+const DATABASE_NAME = "specsheet";
 
 const q = (value) => (value === null || value === undefined ? "NULL" : `'${String(value).replace(/\u0000/g, "").replace(/'/g, "''")}'`);
 

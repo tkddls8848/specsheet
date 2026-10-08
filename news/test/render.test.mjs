@@ -83,3 +83,13 @@ test("뉴스 본문의 [n] 출처 번호는 번호 붙은 출처 목록으로 �
   assert.match(html, /<h2>출처<\/h2><ol class="links cited"><li id="source-2" value="2"><a href="https:\/\/b\.example\/2"/);
   assert.match(html, /<summary>함께 모은 소식 2건 펼쳐 보기<\/summary>/);
 });
+
+test("내비게이션은 다른 Worker로 옮긴 사이트를 절대 주소로 잇는다", () => {
+  const html = renderHome([], { DEVLOG_URL: "https://devlog.example/devlog/", ARCHIVE_URL: "https://specsheet.example/archive/" }, "https://specsheet.example");
+  assert.match(html, /<a href="https:\/\/devlog\.example\/devlog\/">개발 일지<\/a>/);
+  assert.match(html, /<a href="https:\/\/specsheet\.example\/archive\/">아카이브<\/a>/);
+  assert.match(html, /<a href="\/" aria-current="page">뉴스레터<\/a>/);
+  const away = renderHome([], { NEWS_URL: "https://specsheet.example/" }, "https://devlog.example");
+  assert.match(away, /<a href="https:\/\/specsheet\.example\/" aria-current="page">뉴스레터<\/a>/);
+  assert.match(away, /href="https:\/\/specsheet\.example\/feed\.xml"/);
+});

@@ -3,9 +3,9 @@
 IBM·Lenovo·HPE·Dell·NetApp·Oracle 제품 문서에서 관측한 갱신을 쌓아 두고, 벤더와 검색어로 거를
 수 있게 보여 줍니다.
 
-사이트: <https://devlog.tkddls8848.workers.dev/archive/>
+사이트: <https://specsheet.tkddls8848.workers.dev/archive/>
 
-운영 사이트는 Cloudflare Worker `devlog`가 D1에서 읽어 제공합니다. 운영 수집 코드는
+운영 사이트는 Cloudflare Worker `specsheet`가 D1에서 읽어 제공합니다. 운영 수집 코드는
 `news/worker/archive.mjs`(Dell은 `archive-dell.mjs`)와 `shared/vendor-*.mjs`에 있습니다. 이 폴더는
 GitHub Pages 시절의 Eleventy 사이트와 로컬 수집기(`tools/vendor-watch.mjs`)이며 운영 원본이 아닙니다.
 수집기 파싱 테스트는 계속 돕니다.

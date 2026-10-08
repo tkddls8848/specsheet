@@ -1,11 +1,12 @@
 {
   "$schema": "./node_modules/wrangler/config-schema.json",
-  "name": "devlog",
+  "name": "specsheet",
   "main": "./worker/index.mjs",
   "compatibility_date": "2026-08-24",
-  // 매일 07:00 KST. Cron Trigger는 UTC 기준이다.
+  // 전환 전까지 비워 두어 옛 devlog Worker와 겹쳐 돌지 않게 한다.
+  // 전환 때 ["0 22 * * *", "25 0 * * *"]로 바꾼다. Cron Trigger는 UTC 기준이다.
   "triggers": {
-    "crons": ["0 22 * * *", "10 0 * * *", "25 0 * * *"]
+    "crons": []
   },
   "ai": {
     "binding": "AI"
@@ -13,8 +14,8 @@
   "d1_databases": [
     {
       "binding": "DB",
-      "database_name": "devlog-news",
-      "database_id": "49dde3a7-307c-463d-91bc-c2d44cf7a8e7",
+      "database_name": "specsheet",
+      "database_id": "0ca0547a-56ab-48e7-9a07-89f0169b6d99",
       "migrations_dir": "./migrations"
     }
   ],
@@ -25,13 +26,13 @@
     "NEWS_MAX_ITEMS": "30",
     "HN_MIN_POINTS": "100",
     "DEVLOG_URL": "https://devlog.tkddls8848.workers.dev/devlog/",
-    "ARCHIVE_URL": "https://devlog.tkddls8848.workers.dev/archive/"
+    "ARCHIVE_URL": "https://specsheet.tkddls8848.workers.dev/archive/"
   },
   "assets": {
     "directory": "./_site",
     "binding": "ASSETS",
     // HTML과 RSS는 D1에서 동적으로 만들고 CSS·JS는 정적 자산으로 바로 보낸다.
-    "run_worker_first": ["/", "/issues/*", "/archive*", "/devlog*", "/feed.xml", "/healthz"],
+    "run_worker_first": ["/", "/issues/*", "/archive*", "/feed.xml", "/healthz"],
     "html_handling": "auto-trailing-slash",
     "not_found_handling": "404-page"
   },
