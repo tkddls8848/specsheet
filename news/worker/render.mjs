@@ -112,8 +112,6 @@ const siteFromEnv = (env) => ({
 
 export function layout({ env, title, summary, current = "", content, canonical = "", wide = false, scripts = [], robots = "" }) {
   const site = siteFromEnv(env);
-  const isDevlog = current === "devlog";
-  if (isDevlog) { site.title = "devlog"; site.tagline = "코드의 변화에서 설계의 이유를 찾는 개발 기록"; }
   return `<!doctype html>
 <html lang="ko">
   <head>
@@ -127,14 +125,12 @@ export function layout({ env, title, summary, current = "", content, canonical =
     <link rel="alternate" type="application/rss+xml" title="${site.title}" href="/feed.xml" />
     <link rel="stylesheet" href="/assets/css/theme.css" />
     <link rel="stylesheet" href="/assets/css/main.css" />
-    ${isDevlog ? '<link rel="stylesheet" href="/assets/css/devlog.css" />' : ""}
     <script src="/assets/js/theme-init.js"></script>
   </head>
-  <body${isDevlog ? ' class="devlog-page"' : wide ? ' class="wide"' : ""}>
-    ${isDevlog ? '<a class="skip-link" href="#main-content">본문으로 건너뛰기</a>' : ""}
+  <body${wide ? ' class="wide"' : ""}>
     <header class="site-header">
       <div class="site-header-inner">
-        <a class="site-title" href="${isDevlog ? '/devlog/' : '/'}"><span class="site-mark" aria-hidden="true"></span>${site.title}</a>
+        <a class="site-title" href="/"><span class="site-mark" aria-hidden="true"></span>${site.title}</a>
         <nav class="site-nav" aria-label="주요">
           <a href="${escapeHtml(site.devlogUrl)}"${current === "devlog" ? ' aria-current="page"' : ""}>개발 일지</a>
           <a href="${escapeHtml(site.archiveUrl)}"${current === "archive" ? ' aria-current="page"' : ""}>아카이브</a>
@@ -151,7 +147,6 @@ export function layout({ env, title, summary, current = "", content, canonical =
       </div>
     </footer>
     <script src="/assets/js/theme-toggle.js"></script>
-    ${isDevlog ? '<script src="/assets/js/devlog.js" defer></script>' : ""}
     ${scripts.map((src) => `<script src="${escapeHtml(src)}" defer></script>`).join("")}
   </body>
 </html>`;
@@ -238,85 +233,6 @@ export function renderArchive(records, env, origin) {
   <script>(()=>{const q=document.getElementById('archive-query'),rows=[...document.querySelectorAll('#archive-rows tr[data-vendor]')],count=document.getElementById('archive-count'),empty=document.getElementById('archive-empty'),chips=[...document.querySelectorAll('.archive-chip')];let vendor='';const apply=()=>{const term=q.value.trim().toLowerCase();let n=0;for(const row of rows){const show=(!vendor||row.dataset.vendor===vendor)&&(!term||row.textContent.toLowerCase().includes(term));row.hidden=!show;if(show)n++}count.textContent=n+'건';if(empty)empty.hidden=n!==0||!rows.length};q?.addEventListener('input',apply);for(const chip of chips)chip.addEventListener('click',()=>{vendor=chip.dataset.vendor;for(const item of chips){const active=item===chip;item.classList.toggle('is-on',active);item.setAttribute('aria-pressed',String(active))}apply()});apply()})()</script>`;
   return layout({ env, title: "벤더 문서 아카이브", summary: "IBM, Lenovo, HPE, Dell, NetApp, Oracle 제품 문서 아카이브", current: "archive", content, canonical: `${origin}/archive/`, wide: true });
 }
-
-// Page numbers to show: all when few, otherwise first, last and the current neighbourhood.
-export function pageWindow(page, pages) {
-  if (pages <= 7) return Array.from({ length: pages }, (_, index) => index + 1);
-  const shown = new Set([1, pages, page - 1, page, page + 1].filter((value) => value >= 1 && value <= pages));
-  const sorted = [...shown].sort((a, b) => a - b);
-  return sorted.flatMap((value, index) => (index && value - sorted[index - 1] > 1 ? ["…", value] : [value]));
-}
-
-const devlogPageUrl = (page, query) => {
-  const params = new URLSearchParams();
-  if (query) params.set("q", query);
-  if (page > 1) params.set("page", String(page));
-  const search = params.toString();
-  return `/devlog/${search ? `?${search}` : ""}`;
-};
-
-function devlogPagination({ page, pages, query }) {
-  if (pages <= 1) return "";
-  const link = (target, label, rel = "") => `<a class="journal-page" href="${escapeHtml(devlogPageUrl(target, query))}"${rel ? ` rel="${rel}"` : ""}>${label}</a>`;
-  const numbers = pageWindow(page, pages).map((value) => value === "…"
-    ? '<span class="journal-page journal-page-gap" aria-hidden="true">…</span>'
-    : value === page ? `<span class="journal-page is-current" aria-current="page">${value}</span>` : link(value, String(value))).join("");
-  const prev = page > 1 ? link(page - 1, '<span aria-hidden="true">←</span> 이전', "prev") : '<span class="journal-page is-disabled" aria-hidden="true">← 이전</span>';
-  const next = page < pages ? link(page + 1, '다음 <span aria-hidden="true">→</span>', "next") : '<span class="journal-page is-disabled" aria-hidden="true">다음 →</span>';
-  return `<nav class="journal-pagination" aria-label="개발 기록 페이지">${prev}<span class="journal-pages">${numbers}</span>${next}</nav>`;
-}
-
-export function renderDevlogHome(listing, env, origin, { admin = false } = {}) {
-  const { posts, total, page, pages, query } = Array.isArray(listing)
-    ? { posts: listing, total: listing.length, page: 1, pages: 1, query: "" }
-    : listing;
-  // Only the newest post on the unfiltered first page is the featured one.
-  const featured = page === 1 && !query;
-  const rows = posts.map((post, index) => `<li class="journal-card${featured && index === 0 ? ' journal-featured' : ''}" data-journal-entry>
-    <div class="journal-card-meta"><span>${featured && index === 0 ? 'LATEST ENTRY' : 'DEVELOPMENT LOG'}</span><time datetime="${escapeHtml(post.post_date)}">${DAY.format(new Date(post.post_date))}</time></div>
-    <h3><a href="/devlog/posts/${encodeURIComponent(post.slug)}/">${escapeHtml(post.title)}</a></h3>
-    ${post.summary ? `<p>${escapeHtml(post.summary)}</p>` : ""}
-    <div class="journal-card-bottom"><span>${post.ai_generated ? 'AI 자동 작성' : '작업 회고'}</span><span class="journal-read">글 읽기 <span aria-hidden="true">↗</span></span></div>
-  </li>`).join("");
-  const content = `<section class="journal-hero" aria-labelledby="journal-title">
-    <p class="journal-eyebrow">ENGINEERING JOURNAL <span> / </span> @tkddls8848</p>
-    <h1 id="journal-title">코드를 바꾸고,<br /><span>생각을 남깁니다.</span></h1>
-    <p class="journal-description">무엇을 만들었는지에서 한 걸음 더.<br />커밋에 담긴 구현과 설계의 선택, 다음에 확인할 것들을 기록합니다.</p>
-    <a class="journal-github" href="https://github.com/tkddls8848">GitHub에서 코드 보기 <span aria-hidden="true">↗</span></a>
-    ${admin ? '<p class="journal-owner"><a class="journal-owner-link" href="/devlog/admin/">글 관리 · 새 글 쓰기</a></p>' : ""}
-  </section>
-  <div class="journal-layout"><section aria-labelledby="entries-title">
-    <div class="journal-toolbar"><h2 id="entries-title">${query ? "검색 결과" : "개발 기록"} <span>${total}</span></h2><form class="journal-search" method="get" action="/devlog/" role="search"><label><span class="visually-hidden">글 제목과 요약 검색</span><input name="q" type="search" value="${escapeHtml(query)}" placeholder="제목과 요약 검색" /></label></form></div>
-    ${query ? `<p class="journal-filter">‘${escapeHtml(query)}’에 맞는 글 ${total}편 · <a href="/devlog/">전체 목록</a></p>` : ""}
-    <ul class="journal-list">${rows}</ul>
-    ${posts.length ? "" : `<div class="journal-empty"><h3>${query ? "검색 결과가 없습니다." : "첫 번째 기록을 기다리고 있습니다."}</h3><p>${query ? '다른 키워드로 찾아보거나 <a href="/devlog/">전체 목록</a>으로 돌아가세요.' : "공개 저장소의 새로운 커밋이 모이면 이곳에 개발 기록이 쌓입니다."}</p></div>`}
-    ${devlogPagination({ page, pages, query })}
-  </section>
-  <aside class="journal-sidebar"><div class="journal-about"><span class="journal-avatar" aria-hidden="true">&lt;/&gt;</span><p class="journal-eyebrow">BEHIND THE CODE</p><h2>변경 너머의 맥락</h2><p>작동하는 코드를 만드는 일과 그 이유를 설명하는 일. 이곳에는 두 가지를 함께 남깁니다.</p><dl><dt>01 / 구현</dt><dd>실제 코드에서 확인한 변화</dd><dt>02 / 판단</dt><dd>설계의 의미와 유지보수 비용</dd><dt>03 / 회고</dt><dd>남은 질문과 다음 검증</dd></dl></div><p class="journal-note">그날의 커밋을 옆에 두고 직접 쓴 작업 회고입니다. 각 글 하단에서 근거가 된 커밋을 함께 확인할 수 있습니다.</p></aside></div>`;
-  return layout({
-    env, current: "devlog", content,
-    title: query ? `‘${query}’ 검색` : page > 1 ? `개발 기록 ${page}쪽` : "개발 기록",
-    summary: "커밋에 담긴 구현, 설계 판단과 다음 검증을 기록하는 기술 블로그",
-    canonical: `${origin}${devlogPageUrl(query ? 1 : page, "")}`,
-    robots: query ? "noindex, follow" : "",
-  });
-}
-
-export function renderDevlogPost(post, env, origin, { admin = false } = {}) {
-  const groups = new Map();
-  for (const commit of (post.commits || []).filter((c) => !c.visibility || c.visibility === "public")) {
-    if (!groups.has(commit.repo)) groups.set(commit.repo, []);
-    groups.get(commit.repo).push(commit);
-  }
-  const sources = [...groups].map(([repo, commits]) => `<h3><a href="https://github.com/${escapeHtml(repo)}">${escapeHtml(repo)}</a></h3><ul>${commits.map((commit) => `<li><a href="https://github.com/${escapeHtml(repo)}/commit/${escapeHtml(commit.sha)}"><code>${escapeHtml(commit.sha.slice(0, 7))}</code></a> ${escapeHtml(commit.message)}</li>`).join("")}</ul>`).join("");
-  const body = markdownToHtml(post.body_markdown, { headingIds: true });
-  const headings = [...body.matchAll(/<h([23]) id="(section-\d+)">([\s\S]*?)<\/h\1>/g)];
-  const toc = headings.map((heading) => `<li class="toc-level-${heading[1]}"><a href="#${heading[2]}">${heading[3].replace(/<[^>]*>/g, "")}</a></li>`).join("");
-  const readingMinutes = Math.max(1, Math.ceil(String(post.body_markdown || "").length / 500));
-  const content = `<a class="journal-back" href="/devlog/">← 모든 개발 기록</a><div class="journal-article-layout"><article class="post journal-post"><header class="post-header"><p class="journal-eyebrow">ENGINEERING JOURNAL${admin ? ` · <a class="journal-owner-link" href="/devlog/admin/posts/${encodeURIComponent(post.slug)}/">이 글 수정</a>` : ""}</p><h1>${escapeHtml(post.title)}</h1><p class="post-meta"><time datetime="${escapeHtml(post.post_date)}">${DAY.format(new Date(post.post_date))}</time><span>약 ${readingMinutes}분 읽기</span><span>커밋 ${(post.commits || []).length}개 · 저장소 ${groups.size}개</span>${post.ai_generated ? '<span class="badge">AI 자동 작성</span>' : '<span class="badge">작업 회고</span>'}</p>${post.summary ? `<p class="post-summary">${escapeHtml(post.summary)}</p>` : ""}</header><div class="journal-prose">${body}</div>${post.ai_generated ? '<p class="journal-disclosure">그날의 공개 커밋 메시지를 바탕으로 AI가 자동 작성한 글입니다. 작성자가 검토하며 고쳐 나갑니다.</p>' : ''}${sources ? `<section class="sources journal-sources" id="references"><h2>이 글의 근거</h2><details><summary>참고한 커밋 ${(post.commits || []).length}개 펼쳐 보기</summary>${sources}</details></section>` : ""}<p class="back"><a href="/devlog/">← 개발 기록 목록</a></p></article>${toc ? `<aside class="journal-toc"><nav aria-label="글 목차"><p class="journal-eyebrow">ON THIS PAGE</p><ol>${toc}${sources ? '<li><a href="#references">이 글의 근거</a></li>' : ''}</ol></nav></aside>` : ''}</div>`;
-  return layout({ env, title: post.title, summary: post.summary, current: "devlog", content, canonical: `${origin}/devlog/posts/${encodeURIComponent(post.slug)}/` });
-}
-
 export function renderNotFound(env) {
   return layout({
     env,
