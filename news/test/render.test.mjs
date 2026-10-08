@@ -93,3 +93,10 @@ test("내비게이션은 다른 Worker로 옮긴 사이트를 절대 주소로 �
   assert.match(away, /<a href="https:\/\/specsheet\.example\/" aria-current="page">뉴스레터<\/a>/);
   assert.match(away, /href="https:\/\/specsheet\.example\/feed\.xml"/);
 });
+
+test("RSS guid는 Worker를 옮겨도 그대로라 구독자에게 옛 이슈가 다시 오지 않는다", () => {
+  const issue = { slug: "2026-10-01-news", title: "뉴스", summary: "요약", published_at: "2026-10-01T00:00:00.000Z" };
+  const rss = renderFeed([issue], "https://specsheet.tkddls8848.workers.dev");
+  assert.match(rss, /<guid isPermaLink="false">https:\/\/devlog\.tkddls8848\.workers\.dev\/issues\/2026-10-01-news\/<\/guid>/);
+  assert.match(rss, /<link>https:\/\/specsheet\.tkddls8848\.workers\.dev\/issues\/2026-10-01-news\/<\/link>/);
+});

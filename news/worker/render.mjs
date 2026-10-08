@@ -244,10 +244,14 @@ export function renderNotFound(env) {
 
 const escapeXml = escapeHtml;
 
+// 이슈는 2026-10에 devlog Worker에서 옮겨 왔다. 구독자의 RSS 리더가 같은 이슈를 새 글로 보지 않도록
+// guid는 옛 주소 그대로 고정한다. 링크는 지금 주소를 쓴다.
+const GUID_ORIGIN = "https://devlog.tkddls8848.workers.dev";
+
 export function renderFeed(issues, origin) {
   const items = issues
     .map(
-      (issue) => `<item><title>${escapeXml(issue.title)}</title><link>${origin}/issues/${encodeURIComponent(issue.slug)}/</link><guid isPermaLink="true">${origin}/issues/${encodeURIComponent(issue.slug)}/</guid><pubDate>${new Date(issue.published_at).toUTCString()}</pubDate><description>${escapeXml(issue.summary)}</description></item>`
+      (issue) => `<item><title>${escapeXml(issue.title)}</title><link>${origin}/issues/${encodeURIComponent(issue.slug)}/</link><guid isPermaLink="false">${GUID_ORIGIN}/issues/${encodeURIComponent(issue.slug)}/</guid><pubDate>${new Date(issue.published_at).toUTCString()}</pubDate><description>${escapeXml(issue.summary)}</description></item>`
     )
     .join("");
   return `<?xml version="1.0" encoding="UTF-8"?><rss version="2.0"><channel><title>devlog news</title><link>${origin}/</link><description>매일 발행되는 IT 뉴스 다이제스트</description><language>ko</language>${items}</channel></rss>`;
