@@ -2,7 +2,7 @@
 
 IT 뉴스 다이제스트와 벤더 문서(데이터시트) 아카이브를 Cloudflare Worker `specsheet` 하나가 제공하고,
 운영 데이터는 D1 `specsheet`에 저장합니다. 2026-10에 [devlog](https://github.com/tkddls8848/devlog)
-저장소에서 분리했고, 작업 회고는 <https://devlog.tkddls8848.workers.dev/devlog/>에 남아 있습니다.
+저장소에서 분리한 독립 서비스입니다.
 매일 생성되는 결과는 GitHub에 커밋하지 않습니다.
 
 | 폴더 | 주소 | 하는 일 |

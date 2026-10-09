@@ -15,7 +15,6 @@ const fakeDb = () => {
 const env = () => ({
   DB: fakeDb(),
   ASSETS: { fetch: async () => new Response("missing", { status: 404 }) },
-  DEVLOG_URL: "https://devlog.tkddls8848.workers.dev/devlog/",
 });
 const get = (path, init) => worker.fetch(new Request(`https://specsheet.tkddls8848.workers.dev${path}`, init), env());
 

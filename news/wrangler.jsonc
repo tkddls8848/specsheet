@@ -24,7 +24,6 @@
     "NEWS_PER_SOURCE": "3",
     "NEWS_MAX_ITEMS": "30",
     "HN_MIN_POINTS": "100",
-    "DEVLOG_URL": "https://devlog.tkddls8848.workers.dev/devlog/",
     "ARCHIVE_URL": "https://specsheet.tkddls8848.workers.dev/archive/"
   },
   "assets": {

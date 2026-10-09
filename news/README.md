@@ -118,7 +118,7 @@ Workers Builds와 중복 배포하지 않습니다.
 - `NEWS_PER_SOURCE`: 소스별 최대 기사, 기본 3
 - `NEWS_MAX_ITEMS`: 이슈 전체 최대 기사, 기본 30
 - `HN_MIN_POINTS`: Hacker News 최소 점수, 기본 100
-- `DEVLOG_URL`, `ARCHIVE_URL`: 상단 내비게이션 주소 (`ARCHIVE_URL`은 Worker의 `/archive/`)
+- `ARCHIVE_URL`: 상단 내비게이션의 아카이브 주소 (`ARCHIVE_URL`은 Worker의 `/archive/`)
 
 ## D1 데이터
 

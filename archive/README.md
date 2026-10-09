@@ -18,7 +18,7 @@ tools/sources/                IBM·Lenovo·HPE·Dell·NetApp·Oracle 수집기
 test/sources.test.mjs         fetch를 스텁해 수집기 파싱을 검증
 test/vendor-watch.test.mjs    수집·중복 제거·저장을 하위 프로세스로 검증
 src/_data/vendorArchive.json  누적된 문서 목록
-src/_data/site.js             사이트 제목과 개발 일지 링크
+src/_data/site.js             사이트 제목과 뉴스레터 링크
 src/index.njk                 목록 표와 거르기 화면
 ```
 
@@ -104,5 +104,5 @@ IBM_REGION=AP npm run watch:vendors
 npm run watch:vendors:dry
 ```
 
-`IBM_REGION` 기본값은 `AP`입니다. `DEVLOG_URL`로 개발 일지 사이트 주소를 덮어쓸
-수 있으며 기본값은 `src/_data/site.js`에 있습니다.
+`IBM_REGION` 기본값은 `AP`입니다. `NEWS_URL`로 뉴스레터 주소를 덮어쓸 수 있으며
+기본값은 `src/_data/site.js`에 있습니다.

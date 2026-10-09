@@ -106,7 +106,6 @@ const siteFromEnv = (env) => ({
   title: "devlog news",
   tagline: "IT 업계 뉴스와 엔지니어링 블로그를 하루 한 편으로 묶는 뉴스레터",
   githubUser: "tkddls8848",
-  devlogUrl: env.DEVLOG_URL || "https://devlog.tkddls8848.workers.dev/devlog/",
   archiveUrl: env.ARCHIVE_URL || "/archive/",
   newsUrl: env.NEWS_URL || "/",
 });
@@ -133,7 +132,6 @@ export function layout({ env, title, summary, current = "", content, canonical =
       <div class="site-header-inner">
         <a class="site-title" href="/"><span class="site-mark" aria-hidden="true"></span>${site.title}</a>
         <nav class="site-nav" aria-label="주요">
-          <a href="${escapeHtml(site.devlogUrl)}"${current === "devlog" ? ' aria-current="page"' : ""}>개발 일지</a>
           <a href="${escapeHtml(site.archiveUrl)}"${current === "archive" ? ' aria-current="page"' : ""}>아카이브</a>
           <a href="${escapeHtml(site.newsUrl)}"${current === "home" ? ' aria-current="page"' : ""}>뉴스레터</a>
         </nav>
