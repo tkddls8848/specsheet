@@ -80,7 +80,7 @@ Info Hub(`infohub.delltechnologies.com`)에도 날짜가 붙은 기술 문서가
 
 HPE 사이트는 Cloudflare Worker에서 오는 요청을 HTTP 520으로 막습니다(2026-09-25부터). 그래서
 HPE는 GitHub 러너에서 같은 수집기(`shared/vendor-hpe.mjs`)로 모아 D1 HTTP API로 넣습니다
-(`news/tools/push-vendor-docs.mjs`). 워크플로에는 GitHub Actions secret `CLOUDFLARE_API_TOKEN`(D1 편집)과
+(`news/tools/push-vendor-docs.mjs`). 워크플로에는 GitHub Actions secret `CLOUDFLARE_WORKER_AI_API_TOKEN`(D1 편집)과
 `CLOUDFLARE_ACCOUNT_ID`가 필요합니다. 로컬에서는 `cd news && node tools/push-vendor-docs.mjs`로
 wrangler 로그인을 써서 같은 일을 할 수 있습니다(`--dry-run`이면 SQL 문 수만 보여 줌). 이미 있는
 문서는 건너뜁니다. Worker 쪽 HPE 시도는 여전히 실패로 기록되어 실행 이력이 `partial`로 남습니다.

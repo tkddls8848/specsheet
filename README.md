@@ -38,7 +38,7 @@ IT 뉴스 다이제스트와 벤더 문서(데이터시트) 아카이브를 Clou
 
 | 어디에 | 이름 | 쓰임 |
 | --- | --- | --- |
-| GitHub Actions secret | `CLOUDFLARE_API_TOKEN`(D1 편집), `CLOUDFLARE_ACCOUNT_ID` | HPE 수집 워크플로의 D1 쓰기 |
+| GitHub Actions secret | `CLOUDFLARE_WORKER_AI_API_TOKEN`(D1 편집), `CLOUDFLARE_ACCOUNT_ID` | HPE 수집 워크플로의 D1 쓰기 |
 | `news/wrangler.jsonc` vars | `CF_AI_MODEL` 등 | 뉴스 다이제스트 모델과 수집 설정 |
 | 저장소 최상위 `.env` | 로컬 도구 설정 | 로컬 실행 |
 

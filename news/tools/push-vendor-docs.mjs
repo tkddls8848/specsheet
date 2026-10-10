@@ -1,7 +1,7 @@
 // Cloudflare 밖에서 벤더 문서를 수집해 운영 D1에 넣는다.
 // HPE 사이트는 Cloudflare Worker에서 오는 요청을 HTTP 520으로 막는다(2026-09-25부터 매일 0건).
 // 그래서 HPE는 GitHub Actions나 로컬에서 이 스크립트로 수집한다.
-//   CLOUDFLARE_API_TOKEN(D1 편집)과 CLOUDFLARE_ACCOUNT_ID가 있으면 D1 HTTP API로,
+//   CLOUDFLARE_WORKER_AI_API_TOKEN(D1 편집)과 CLOUDFLARE_ACCOUNT_ID가 있으면 D1 HTTP API로,
 //   없으면 로컬 wrangler 로그인으로 넣는다.
 // 사용: node tools/push-vendor-docs.mjs [--dry-run]
 import "../../shared/load-env.mjs";
@@ -29,7 +29,7 @@ export function runSql(report, now = new Date()) {
 }
 
 async function executeViaApi(statements) {
-  const { CLOUDFLARE_API_TOKEN: token, CLOUDFLARE_ACCOUNT_ID: account } = process.env;
+  const { CLOUDFLARE_WORKER_AI_API_TOKEN: token, CLOUDFLARE_ACCOUNT_ID: account } = process.env;
   for (let i = 0; i < statements.length; i += 50) {
     const response = await fetch(`https://api.cloudflare.com/client/v4/accounts/${account}/d1/database/${DATABASE_ID}/query`, {
       method: "POST",
@@ -61,7 +61,7 @@ async function main() {
   if (report.status !== "success") console.warn(JSON.stringify(report));
   const statements = [...insertSql(records), runSql(report, startedAt)];
   if (process.argv.includes("--dry-run")) return console.log(`드라이런: SQL ${statements.length}문`);
-  if (process.env.CLOUDFLARE_API_TOKEN && process.env.CLOUDFLARE_ACCOUNT_ID) await executeViaApi(statements);
+  if (process.env.CLOUDFLARE_WORKER_AI_API_TOKEN && process.env.CLOUDFLARE_ACCOUNT_ID) await executeViaApi(statements);
   else executeViaWrangler(statements);
   console.log("운영 D1에 반영했습니다(이미 있는 문서는 건너뜀).");
   if (report.status === "failed") process.exitCode = 1;
